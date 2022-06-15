@@ -1,17 +1,15 @@
-
 import os
 from pathlib import Path
-from re import S
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-pt#8gdp-$n@7e^!l+jx6m5tx^jj(f7a8e$pozxmk1c^x(%@b=7'
+SECRET_KEY = 'django-insecure-pt#8sfdqvgdp-$n@7e^!l+jx6m5tx^jj(f7a8e$pozxmk1c^x(%@b=7'
 
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1","195.133.49.54"]
+ALLOWED_HOSTS = ["127.0.0.1", "87.249.44.184"]
 
 
 # Application definition
@@ -106,7 +104,13 @@ STATIC_URL = '/static/'
 # STATICFILES_DIRS = [STATIC_DIR]
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CSRF_TRUSTED_ORIGINS = ['http://87.249.44.184']
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 REDIS_HOST = "localhost"
@@ -120,7 +124,3 @@ CELERY_RESULT_SERIALIZER  = 'json'
 # CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
 
 
-# try:
-#     from .local_settings import *
-# except ImportError:
-#     from .prod_settings import *

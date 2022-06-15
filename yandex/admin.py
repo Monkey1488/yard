@@ -7,9 +7,9 @@ class YandexAdmin(admin.ModelAdmin):
     #     # ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     # ]
     # inlines = [Point]
-    list_display = ('title', 'activate', "start_time", "end_time", "created_at", "updated_at")
+    list_display = ('title', 'comment', 'activate', "total_number", "start_time", "end_time", "created_at", "updated_at")
     # list_display_links: ("title", )
-    # list_editable = ('activate', )
+    list_editable = ('activate',"total_number", "start_time",)
     # readonly_fields = ()
 
 admin.site.register(Point, YandexAdmin)

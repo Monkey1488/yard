@@ -12,10 +12,10 @@ app.conf.timezone = 'Europe/Moscow'
 app.conf.beat_schedule = {
     'start_bots': {
         'task': 'yandex.tasks.start',
-        'schedule': crontab(hour=9, minute=30)
-        # 'schedule': 30
+        'schedule': crontab(hour=20, minute=4)
+        # 'schedule': 10
     },
 }
 
-#celery -A yard worker -l info
+#celery -A yard worker 
 #celery -A yard beat -l info
