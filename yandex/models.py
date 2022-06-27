@@ -14,13 +14,15 @@ class Point(models.Model):
     updated_at = models.DateTimeField("Время последнего редактирования", auto_now=True)
     pf1 = models.PositiveSmallIntegerField('Меню-%', default=0,)
     pf2 = models.PositiveSmallIntegerField('Товары и услуги-%',default=0,)
-    pf3 = models.PositiveSmallIntegerField('Фото-%',default=0,)
-    pf4 = models.PositiveSmallIntegerField('Отзывы-%',default=0,)
-    pf5 = models.PositiveSmallIntegerField('Посмотрел истории-%',default=0,)
-    pf6 = models.PositiveSmallIntegerField('Перешел на сайт-%',default=0,)
-    pf7 = models.PositiveSmallIntegerField('Построил маршрут-количество',default=0,)
-    
-
+    pf3 = models.PositiveSmallIntegerField('Новости-%',default=0,)
+    pf4 = models.PositiveSmallIntegerField('Фото-%',default=0,)
+    pf5 = models.PositiveSmallIntegerField('Отзывы-%',default=0,)
+    pf6 = models.PositiveSmallIntegerField('Посмотрел истории-%',default=0,)
+    pf7 = models.PositiveSmallIntegerField('Перешел на сайт-количество',default=0,)
+    pf8 = models.PositiveSmallIntegerField('Построил маршрут-количество',default=0,)
+    pf9 = models.PositiveSmallIntegerField('Посмотрел график работы-%',default=0,)
+    pf10 = models.PositiveSmallIntegerField('Позвонил-количество',default=0,)
+    pf11 = models.PositiveSmallIntegerField('Посмотрел входы-%',default=0,)
     def __str__(self):
         return self.title
 
