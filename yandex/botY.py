@@ -1,4 +1,5 @@
 import random
+from sre_constants import SUCCESS
 import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -8,7 +9,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from seleniumwire import webdriver
-from pyvirtualdisplay import Display 
+# from pyvirtualdisplay import Display 
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+capa = DesiredCapabilities.CHROME
+capa["pageLoadStrategy"] = "none"
 
 # # options = webdriver.ChromeOptions()
 # # options.add_argument("accept=*/*")
@@ -92,12 +96,12 @@ class BotMobile:
             success = 0
             try:
                 driver.get(url=url)
-                action =  ActionChains(driver)
+                action = ActionChains(driver)
                 print("СТАРТ")
-                time.sleep(random.uniform(1.01, 2.15))
+                time.sleep(random.uniform(3.01, 7.15))
                 try:
                     # закрываем окно с предложением установить Яндекс.Карты на смартфон
-                    start_display_close_wait = WebDriverWait(driver, 16).until(
+                    start_display_close_wait = WebDriverWait(driver, 22).until(
                         EC.presence_of_element_located((By.XPATH, "//div[2]/div[4]/div/div[3]/button")))
                     start_display_close = driver.find_element(
                         by=By.XPATH, value="//div[2]/div[4]/div/div[3]/button")
@@ -115,7 +119,7 @@ class BotMobile:
                     input.send_keys(Keys.ENTER)
                 except:
                     print("ошибки при вводе")
-                time.sleep(random.uniform(2.01, 3.15))
+                time.sleep(random.uniform(1.01, 2.15))
 
                 wait = WebDriverWait(driver, 30).until(
                         EC.presence_of_element_located((By.XPATH, "//div[text()='Результаты поиска']")))
@@ -130,10 +134,6 @@ class BotMobile:
                     publics = driver.find_elements(
                         by=By.CLASS_NAME, value="search-snippet-view")    
                     for i in publics:
-                
-                        wait = WebDriverWait(driver, 30).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, "search-business-snippet-view__title")))
-
                         if i.find_element(by=By.CLASS_NAME, value="search-business-snippet-view__title").text == name:
                             action.move_to_element(i).click(i).perform()
                             print(f"УСПЕХ - СТАРТ {theme}")
@@ -155,7 +155,7 @@ class BotMobile:
                         print("ошибка при скролле")
                     
                     if a[-1] == last_div:
-                        print(f"Точка не найдена, {theme}")
+                        print(f"Точка не найдена, {theme} {url}")
                         break
                 # конец скроллинга
                 if success:
@@ -169,47 +169,34 @@ class BotMobile:
         time.sleep(random.uniform(8.01, 16.15))
 
     def act_photo(self, driver):
-        pf = driver.find_element(by=By.XPATH, value=f"//div[text()='Фото']")
-        ActionChains(driver).move_to_element(pf).click(pf).perform()
-        time.sleep(random.uniform(2.50, 7.99))
-        # time.sleep(100)
-        for _ in range(random.randrange(4,10)):
-            pf = driver.find_element(
-                by=By.TAG_NAME, value='body').send_keys(Keys.DOWN)
-        time.sleep(random.uniform(2.50, 4.99))
-        for _ in range((random.randrange(3,6))):
-            pf = driver.find_element(
-                by=By.TAG_NAME, value='body').send_keys(Keys.UP)
-        time.sleep(random.uniform(2.50, 4.99))
         try:
-            pf = driver.find_element(
-                by=By.XPATH, value="/html/body/div[1]/div[2]/div[8]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div[4]/div/div[6]/div/div/div[4]/div/div/div/div/div/div/button")
-            ActionChains(driver).move_to_element(pf).click(pf).perform()
+            action = ActionChains(driver)
+            wait = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, "//div[text()='Фото']")))
+            pf = driver.find_element(by=By.XPATH, value="//div[text()='Фото']")
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(2.50, 7.99))
+
+            wait = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "photo-list__frame-wrapper")))
+            pf = driver.find_elements(
+                by=By.CLASS_NAME, value="photo-list__frame-wrapper")[0]
+            action.move_to_element(pf).click(pf).perform()
             time.sleep(3)
+            wait = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "photo-wrapper__photo")))
             pf = driver.find_element(
-                by=By.XPATH, value="/html/body/div[1]/button")
-            ActionChains(driver).move_to_element(pf).click(pf).perform()
+                by=By.CLASS_NAME, value="photo-wrapper__photo")
+            action.move_to_element(pf).move_by_offset(10, 300).click().perform()
+            time.sleep(3)
+ 
+            # pf = driver.find_elements(
+            #     by=By.XPATH, value="/html/body/div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span/svg/path")
+            # ActionChains(driver).move_to_element(pf).click(pf).perform()
+            print("УСПЕХ - Фото")
         except Exception as ex:
             print(ex)
-        time.sleep(random.uniform(2.50, 7.99))
-        
-        # pf = driver.find_elements(
-        #     by=By.CLASS_NAME, value="photo-list__frame-wrapper")[0]
-        # ActionChains(driver).move_to_element(pf).click(pf).perform()
-        # time.sleep(3)
-        # pf = driver.find_element(by=By.TAG_NAME, value="body")
-        # pf.send_keys(Keys.RIGHT)
-        # time.sleep(2)
-        # pf.send_keys(Keys.RIGHT)
-        # time.sleep(3)
-        # pf.send_keys(Keys.LEFT)
-        # time.sleep(4)
-        # pf.send_keys(Keys.RIGHT)
-        # time.sleep(3)
-        # pf = driver.find_elements(
-        #     by=By.XPATH, value="/html/body/div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span/svg/path")
-        # ActionChains(driver).move_to_element(pf).click(pf).perform()
-        # time.sleep(14)
+            print("ОШИБКА - Фото")
 
     def act_watch_history(self, driver):
         pass
@@ -235,52 +222,19 @@ class BotMobile:
             pf = driver.find_element(
                 by=By.XPATH, value="//div[text()='Отзывы']")
             action.move_to_element(pf).click(pf).perform()
-            time.sleep(5.5)
-            wait = WebDriverWait(driver, 30).until(
+            time.sleep(random.uniform(4.50, 7.99))
+            wait = WebDriverWait(driver, 60).until(
             EC.presence_of_element_located((By.XPATH, "//div/div/div[2]/div[5]")))
             pf = driver.find_element(
                 by=By.XPATH, value="//div/div/div[2]/div[5]")
             action.move_to_element(pf).click(pf).perform()
-            time.sleep(3)
+            time.sleep(random.uniform(4.50, 7.99))
             wait = WebDriverWait(driver, 60).until(
                 EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/button")))
             pf = driver.find_element(
                 by=By.XPATH, value="/html/body/div[1]/button")
             action.move_to_element(pf).click(pf).perform()
-
-            # try:
-            #     wait = WebDriverWait(driver, 10).until(
-            #             EC.presence_of_element_located((By.XPATH, "//span[text()='Посмотреть комментарии']")))
-            # except:
-            #     pass
-            # try:
-            #     wait = WebDriverWait(driver, 10).until(
-            #                 EC.presence_of_element_located((By.XPATH, "//span[text()='ответить']")))
-            # except:
-            #     pass
-            # for _ in range(20):
-            #     pf = driver.find_element(
-            #         by=By.TAG_NAME, value='body').send_keys(Keys.DOWN)
-            # time.sleep(1)
-            # try:
-            #     pf = driver.find_element(
-            #         by=By.XPATH, value="//span[text()='ответить']")
-            #     action.move_to_element(pf).click(pf).perform()
-            #     time.sleep(3)
-            #     wait = WebDriverWait(driver, 60).until(
-            #         EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/button")))
-            #     pf = driver.find_element(
-            #         by=By.XPATH, value="/html/body/div[1]/button")
-            #     action.move_to_element(pf).click(pf).perform()
-            # except:
-            #     print("Нет кнопки ОТВЕТИТЬ")
-            # try:
-            #     pf = driver.find_element(
-            #         by=By.XPATH, value="//span[text()='Посмотреть комментарии']")
-            #     action.move_to_element(pf).click(pf).perform()
-            # except:
-            #     print("Нет кнопки Посмотреть комментарии")
-            
+            time.sleep(random.uniform(3.50, 6.99))
             print("УСПЕХ - Отзывы")
             
         except Exception as ex:
@@ -288,137 +242,213 @@ class BotMobile:
             print("ОШИБКА - Отзывы")
 
     def act_news(self, driver):
-        pass
-    #     action =  ActionChains(drыiver)
-    #     wait = WebDriverWait(driver, 60).until(
-    #         EC.presence_of_element_located((By.XPATH, "//div[1][text()='Новости']")))
-    #     pf = driver.find_element(
-    #         by=By.XPATH, value="//div[1][text()='Новости']")
-    #     action.move_to_element(pf).click(pf).perform()
-    #     time.sleep(random.uniform(4.50, 8.70))
-    
-    #     wait = WebDriverWait(driver, 1ы0).until(
-    #         EC.presence_of_element_located((By.CLASS_NAME, "business-posts-list-post-view__date")))
-    #     pf = driver.find_element(
-    #         by=By.CLASS_NAME, value="business-posts-list-post-view__date")
-    #     action.move_to_element(pf).click(pf).perform()
-    #     time.sleep(random.uniform(2.50, 5.70))
-        
-    #     wait = WebDriverWait(driver, 10).until(
-    #         EC.presence_of_element_located((By.CLASS_NAME, "business-post-view__photos")))
-    #     pf = driver.find_element(
-    #         by=By.CLASS_NAME, value="business-post-view__photos")
-    #     action.move_to_element(pf).click(pf).perform()
-    #     time.sleep(random.uniform(2.50, 5.70))
-        
-    #     wait = WebDriverWait(driver, 10).until(
-    #         EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span")))
-    #     pf = driver.find_element(
-    #         by=By.XPATH, value="/html/body/div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span")
-    #     action.move_to_element(pf).click(pf).perform()
-    #     time.sleep(random.uniform(2.50, 5.70))
-    #     print("УСПЕХ - Новости")
-
-    def act_phone(self, driver):
-        action =  ActionChains(driver)
-        wait = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "card-phones-view__phone-number-link")))
-        pf = driver.find_element(
-            by=By.CLASS_NAME, value="card-phones-view__phone-number-link")
-        action.move_to_element(pf).click(pf).perform()
-        time.sleep(random.uniform(4.50, 6.70))
-        print("УСПЕХ - Звонок")
-
-    def act_watch_input(self, driver):
-        pass
-        # action =  ActionChains(driver)
-        # wait = WebDriverWait(driver, 10).until(
-        #     EC.presence_of_element_located((By.XPATH, "//div[text()='Показать входы']")))
-        # pf = driver.find_element(
-        #     by=By.XPATH, value="//div[text()='Показать входы']")
-        # action.move_to_element(pf).click(pf).perform()
-        # time.sleep(random.uniform(2.50, 3.70))
-        # # wait = WebDriverWait(driver, 10).until(
-        # #     EC.presence_of_element_located((By.CLASS_NAME, "business-card-title-view__bottom-item _working-status")))
-        # # pf = driver.find_element(
-        # #     by=By.CLASS_NAME, value="business-card-title-view__bottom-item _working-status")
-        # # time.sleep(random.uniform(1.50, 3.70))
-        # for _ in range(10):
-        #     pf = driver.find_element(
-        #         by=By.TAG_NAME, value='body').send_keys(Keys.DOWN)
-        # time.sleep(random.uniform(4.50, 6.70))
-        # print("УСПЕХ - Показать входы")
-
-    def act_watch_schedule(self, driver):
-        action =  ActionChains(driver)
-        wait = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//div/div[1]/div[5]/div[4]/div[2]/div/div[1]/div[1]/div[2]")))
-        pf = driver.find_element(
-            by=By.XPATH, value="//div/div[1]/div[5]/div[4]/div[2]/div/div[1]/div[1]/div[2]")
-        action.move_to_element(pf).click(pf).perform()
-        time.sleep(random.uniform(3.50, 5.70))
-        wait = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "sidebar-panel-header-view__controls")))
-        pf = driver.find_element(by=By.CLASS_NAME, value= "sidebar-panel-header-view__controls")
-        action.move_to_element(pf).click(pf).perform()
-        time.sleep(random.uniform(2.50, 4.70))
-        print("УСПЕХ - Время работы")
-
-    def act_menu(self, driver):
-        pass
-    
-    
-    def act_goods_and_services(self, driver):
         try:
             action =  ActionChains(driver)
-
             wait = WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.XPATH, "//div[text()='Товары и услуги']")))
+                EC.presence_of_element_located((By.XPATH, "//div[text()='Новости']")))
             pf = driver.find_element(
-                by=By.XPATH, value="//div[text()='Товары и услуги']")
+                by=By.XPATH, value="//div[text()='Новости']")
             action.move_to_element(pf).click(pf).perform()
-            time.sleep(random.uniform(5.50, 10.70))
-
-            wait = WebDriverWait(driver, 30).until(
-                EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div[2]/div[8]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div[4]/div/div[4]/div/div/div/div/div[1]/div/div[2]/div/button")))
-            pf = driver.find_element(
-                by=By.XPATH, value="/html/body/div[1]/div[2]/div[8]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div[4]/div/div[4]/div/div/div/div/div[1]/div/div[2]/div/button")
-            action.move_to_element(pf).click(pf).perform()
-            time.sleep(random.uniform(2.50, 4.70))
-
+            time.sleep(random.uniform(4.50, 8.70))
+        
             wait = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div[2]/div[8]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div[4]/div/div[4]/div/div/div/div/div/div/div[2]/div/div/div/div/div[2]")))
+                EC.presence_of_element_located((By.CLASS_NAME, "business-posts-list-post-view__date")))
             pf = driver.find_element(
-                by=By.XPATH, value="/html/body/div[1]/div[2]/div[8]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div[4]/div/div[4]/div/div/div/div/div/div/div[2]/div/div/div/div/div[2]")
+                by=By.CLASS_NAME, value="business-posts-list-post-view__date")
             action.move_to_element(pf).click(pf).perform()
-            time.sleep(random.uniform(4.50, 6.70))
-
-            # for _ in range(random.randint(18, 25)):
-            #     pf = driver.find_element(
-            #         by=By.TAG_NAME, value='body').send_keys(Keys.DOWN)
-            # time.sleep(1)
-            # for _ in range(random.randint(14, 20)):
-            #     pf = driver.find_element(
-            #         by=By.TAG_NAME, value='body').send_keys(Keys.UP)
-            # time.sleep(6)
-
+            time.sleep(random.uniform(2.50, 5.70))
+            
             wait = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div[2]/div[9]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div[4]/div/div[4]/div/div/div/div/div/div/div[3]/div[1]/div[2]/div[1]/div/div/div/div[1]/div")))
+                EC.presence_of_element_located((By.CLASS_NAME, "business-post-view__photos")))
             pf = driver.find_element(
-                by=By.XPATH, value="/html/body/div[1]/div[2]/div[9]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div[4]/div/div[4]/div/div/div/div/div/div/div[3]/div[1]/div[2]/div[1]/div/div/div/div[1]/div")
+                by=By.CLASS_NAME, value="business-post-view__photos")
             action.move_to_element(pf).click(pf).perform()
-            time.sleep(random.uniform(4.50, 6.70))
+            time.sleep(random.uniform(2.50, 5.70))
             
             wait = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span")))
             pf = driver.find_element(
                 by=By.XPATH, value="/html/body/div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span")
             action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(2.50, 5.70))
+            print("УСПЕХ - Новости")
+        except:
+            print("ОШИБКА - Новости")
+    def act_phone(self, driver):
+        try:
+            action =  ActionChains(driver)
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "card-phones-view__phone-number-link")))
+            pf = driver.find_element(
+                by=By.CLASS_NAME, value="card-phones-view__phone-number-link")
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(4.50, 6.70))
+            print("УСПЕХ - Звонок")
+        except:
+            print("ОШИБКА - Звонок")
+
+    def act_watch_input(self, driver):
+        try:
+            action =  ActionChains(driver)
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//div[text()='Показать входы']")))
+            pf = driver.find_element(
+                by=By.XPATH, value="//div[text()='Показать входы']")
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(2.50, 3.70))
+            # wait = WebDriverWait(driver, 10).until(
+            #     EC.presence_of_element_located((By.CLASS_NAME, "business-card-title-view__bottom-item _working-status")))
+            # pf = driver.find_element(
+            #     by=By.CLASS_NAME, value="business-card-title-view__bottom-item _working-status")
+            # time.sleep(random.uniform(1.50, 3.70))
+            for _ in range(10):
+                pf = driver.find_element(
+                    by=By.TAG_NAME, value='body').send_keys(Keys.DOWN)
+            time.sleep(random.uniform(4.50, 6.70))
+            print("УСПЕХ - Показать входы")
+        except:
+            print("ОШИБКА - Показать входы")
+
+    def act_watch_schedule(self, driver):
+        try:
+            action =  ActionChains(driver)
+            # wait = WebDriverWait(driver, 30).until(
+            #     EC.presence_of_element_located((By.CLASS_NAME, "business-working-status-flip-view _clickable")))
+            # pf = driver.find_element(
+            #     by=By.CLASS_NAME, value="business-working-status-flip-view _clickable")
+            # action.move_to_element(pf).click(pf).perform()
+            # time.sleep(random.uniform(3.50, 5.70))
+
+            wait = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, "//div/div[1]/div[5]/div[4]/div[2]/div/div[1]/div[1]/div[2]")))
+            pf = driver.find_element(
+                by=By.XPATH, value="//div/div[1]/div[5]/div[4]/div[2]/div/div[1]/div[1]/div[2]")
+            action.move_to_element(pf).click(pf).perform()
+
+            time.sleep(random.uniform(3.50, 5.70))
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "sidebar-panel-header-view__controls")))
+            pf = driver.find_element(by=By.CLASS_NAME, value= "sidebar-panel-header-view__controls")
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(2.50, 4.70))
+            print("УСПЕХ - Время работы")
+        except:
+            print("ОШИБКА - Время работы")
+
+
+    def act_menu(self, driver):
+        try:
+            action =  ActionChains(driver)
+            c = 0
+            try:
+                wait = WebDriverWait(driver, 50).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[text()='Посмотреть всё меню']")))
+                pf = driver.find_element(
+                    by=By.XPATH, value="//div[text()='Посмотреть всё меню']")
+                action.move_to_element(pf).click(pf).perform()
+                c = 1
+            except:
+                pass
+            if c == 0:
+                try:
+                    wait = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//div[text()='Меню']")))
+                    pf = driver.find_element(
+                        by=By.XPATH, value="//div[text()='Меню']")
+                    action.move_to_element(pf).click(pf).perform()
+                except:
+                    pass
+            # time.sleep(random.uniform(5.50, 10.70))
+            wait = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, "//span[text()='Все категории']")))
+            pf = driver.find_element(
+                by=By.XPATH, value="//span[text()='Все категории']")
+            action.move_to_element(pf).perform()
+            time.sleep(random.uniform(1.50, 2.70))
+            action.click().perform()
+            time.sleep(random.uniform(2.50, 4.70))
+            
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "menu-item__text")))
+            pf = driver.find_elements(
+                by=By.CLASS_NAME, value="menu-item__text")[1]
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(4.50, 6.70))
+
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//div/div[3]/div[1]/div[2]/div[1]/div/div/div/div[1]")))
+            pf = driver.find_element(
+                by=By.XPATH, value="//div/div[3]/div[1]/div[2]/div[1]/div/div/div/div[1]")
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(4.50, 6.70))
+            
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span")))
+            pf = driver.find_element(
+                by=By.XPATH, value="//div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span")
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(4.50, 6.70))
+
+            print("УСПЕХ - Меню")
+        except:
+            print("ОШИБКА - Меню")
+    
+    
+    def act_goods_and_services(self, driver):
+        try:
+            action =  ActionChains(driver)
+            c = 0
+            try:
+                wait = WebDriverWait(driver, 50).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[text()='Посмотреть все товары и услуги']")))
+                pf = driver.find_element(
+                    by=By.XPATH, value="//div[text()='Посмотреть все товары и услуги']")
+                action.move_to_element(pf).click(pf).perform()
+                c = 1
+            except:
+                pass
+            if c == 0:
+                try:
+                    wait = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//div[text()='Товары и услуги']")))
+                    pf = driver.find_element(
+                        by=By.XPATH, value="//div[text()='Товары и услуги']")
+                    action.move_to_element(pf).click(pf).perform()
+                except:
+                    pass
+            # time.sleep(random.uniform(5.50, 10.70))
+            wait = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, "//span[text()='Все категории']")))
+            pf = driver.find_element(
+                by=By.XPATH, value="//span[text()='Все категории']")
+            action.move_to_element(pf).perform()
+            time.sleep(random.uniform(1.50, 2.70))
+            action.click().perform()
+            time.sleep(random.uniform(2.50, 4.70))
+            
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "menu-item__text")))
+            pf = driver.find_elements(
+                by=By.CLASS_NAME, value="menu-item__text")[1]
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(4.50, 6.70))
+
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//div/div[3]/div[1]/div[2]/div[1]/div/div/div/div[1]")))
+            pf = driver.find_element(
+                by=By.XPATH, value="//div/div[3]/div[1]/div[2]/div[1]/div/div/div/div[1]")
+            action.move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(4.50, 6.70))
+            
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span")))
+            pf = driver.find_element(
+                by=By.XPATH, value="//div[1]/div[2]/div[10]/div[1]/div[2]/div/div/span")
+            action.move_to_element(pf).click(pf).perform()
             time.sleep(random.uniform(4.50, 6.70))
 
             print("УСПЕХ - Товары и услуги")
         except Exception as ex:
-            print(ex)
             print("ОШИБКА - Товары и услуги")
 
     def back_overview(self, driver):
@@ -433,28 +463,30 @@ class BotMobile:
         print("УСПЕХ - Обзор")
 
     def act_going_to_website(self, driver):
-        action =  ActionChains(driver)
-        pf = driver.find_element(
-            by=By.CLASS_NAME, value= "business-urls-view__text")
-        ActionChains(driver).move_to_element(pf).click(pf).perform()
-        time.sleep(random.uniform(4.50, 7.99))
-        driver.back()
-        time.sleep(random.uniform(3.50, 8.99))
-        print("УСПЕХ - Переход на сайт")
-    
-    def act_build_route(self, driver):
-        action =  ActionChains(driver)
-        
-        wait = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "button__text")))
-        pfs = driver.find_elements(by=By.CLASS_NAME, value="button__text")
-        for i in pfs:
-            if i.text == 'Маршрут':
-                action.move_to_element(i).click(i).perform()
-        # action.move_to_element(pf).click(pf).perform()
-
-        time.sleep(random.uniform(1.50, 3.90))
         try:
+            action =  ActionChains(driver)
+            pf = driver.find_element(
+                by=By.CLASS_NAME, value= "business-urls-view__text")
+            ActionChains(driver).move_to_element(pf).click(pf).perform()
+            time.sleep(random.uniform(4.50, 7.99))
+            driver.back()
+            time.sleep(random.uniform(3.50, 8.99))
+            print("УСПЕХ - Переход на сайт")
+        except:
+            print("ОШИБКА - Переход на сайт")
+
+    def act_build_route(self, driver):
+        try:
+            action =  ActionChains(driver)
+            wait = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "button__text")))
+            pfs = driver.find_elements(by=By.CLASS_NAME, value="button__text")
+            for i in pfs:
+                if i.text == 'Маршрут':
+                    action.move_to_element(i).click(i).perform()
+            # action.move_to_element(pf).click(pf).perform()
+
+            time.sleep(random.uniform(1.50, 3.90))
             wait = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "route-field-view__wrapper")))
             pf = driver.find_element(by=By.CLASS_NAME, value="route-field-view__wrapper")
@@ -465,27 +497,29 @@ class BotMobile:
             pf = driver.find_element(by=By.XPATH, value="/html/body/div[5]/div[2]/div/div[2]/div/div/span/span[1]/input")
             time.sleep(random.uniform(1.50, 2.90))
             pf.send_keys("ресторан")
-            time.sleep(random.uniform(1.50, 2.90))
+            time.sleep(random.uniform(2.50, 3.90))
             pf.send_keys(Keys.ENTER)
             time.sleep(random.uniform(2.50, 3.90))
             pf.send_keys(Keys.DOWN)
             time.sleep(random.uniform(2.50, 3.90))
             pf.send_keys(Keys.ENTER)
+
+            time.sleep(random.uniform(3.50, 4.99))
+            wait = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "button__text")))
+            pfs = driver.find_elements(by=By.CLASS_NAME, value="button__text")
+            for i in pfs:
+                if i.text == 'Поехали':
+                    action.move_to_element(i).click(i).perform()
+            time.sleep(random.uniform(2.50, 3.90))
+            wait = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "collapsed-route-panel-form-view__distribution-close")))
+            pf = driver.find_element(by=By.CLASS_NAME, value="collapsed-route-panel-form-view__distribution-close")        
+            action.move_to_element(pf).click(pf).perform()
+            print("УСПЕХ - Маршрут")
         except:
-            pass
-        time.sleep(random.uniform(3.50, 4.99))
-        wait = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "button__text")))
-        pfs = driver.find_elements(by=By.CLASS_NAME, value="button__text")
-        for i in pfs:
-            if i.text == 'Поехали':
-                action.move_to_element(i).click(i).perform()
-        time.sleep(random.uniform(2.50, 3.90))
-        wait = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "collapsed-route-panel-form-view__distribution-close")))
-        pf = driver.find_element(by=By.CLASS_NAME, value="collapsed-route-panel-form-view__distribution-close")        
-        action.move_to_element(pf).click(pf).perform()
-        print("УСПЕХ - Маршрут")
+            print("ОШИБКА - Маршрут")
+
         time.sleep(random.uniform(2.50, 3.90))
 
 if __name__ == "__main__":
@@ -497,41 +531,47 @@ if __name__ == "__main__":
     options.add_argument('--no-sandbox')
     # options.add_argument("--headless")
 
-    theme_list = ["Бар", "eда", "где поесть"]
-    url = "https://yandex.ru/maps/213/moscow/?indoorLevel=1&ll=37.641621%2C55.734747&z=14.01"
+    theme_list = ["кафе", "кольца", "еда"]
+    url = "https://yandex.ru/maps/213/moscow/?indoorLevel=1&ll=37.647197%2C55.729064&z=20"
     name = "Beersach.bar" 
 
-    display = Display(visible = 1, size=(1536, 1024)) 
-    display.start()
+    # display = Display(visible = 1, size=(1536, 1024)) 
+    # display.start()
 
     for theme in theme_list:
         mob = BotMobile()
         # proxy_list = ["https://4bgc8fuw:1yppm77g@marina.onlinesim.ru:14714", "https://iparchitect_12166_02_06_22:d5RafhEEhb28GeEk37@188.143.169.28:30147"]
         proxy_options = {
             "proxy": {
-                "https": "https://4bgc8fuw:1yppm77g@marina.onlinesim.ru:14714"
+                "https": "https://iparchitect_12166_02_06_22:d5RafhEEhb28GeEk37@188.143.169.28:30147"
             }
         }
 #https://4bgc8fuw:1yppm77g@marina.onlinesim.ru:14714
 #https://iparchitect_12166_02_06_22:d5RafhEEhb28GeEk37@188.143.169.28:30147
 
         driver = webdriver.Chrome(
+            desired_capabilities=capa,
             service=Service(ChromeDriverManager().install()),
             options=options, 
-        seleniumwire_options=proxy_options
+            # seleniumwire_options=proxy_options
         )    
         mob.bot_start(driver, url, theme, name)
         # mob.act_watch_schedule(driver)
-        # mob.act_phone(driver)
-        # mob.act_watch_input(driver)
+        mob.act_photo(driver)
+        # mob.act_news(driver)
         # mob.act_watch_schedule(driver)
         # mob.act_goods_and_services(driver)
         # mob.back_overview(driver)
+        # mob.act_phone(driver)
         # mob.act_comment(driver)
         # mob.back_overview(driver)
+        # mob.act_menu(driver)
+        # mob.back_overview(driver)
+        # mob.act_watch_input(driver)
+        # mob.act_comment(driver)
         # mob.act_build_route(driver)
         # mob.act_going_to_website(driver)
-        time.sleep(1)
+        time.sleep(1000)
         # mob.photo_action(driver)
         
         
