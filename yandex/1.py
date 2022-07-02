@@ -41,16 +41,17 @@ import random
 #             i.append(1)
 #             pf-=1
 
-keyword = "1.цветы-30\n2.розы-30\n3.магазин-40"
+keyword = "1.цветы-3\n2.розы-3\n3.магазин-4"
 total_number = 100
 b = keyword.split("\n")
 list_theme = ''
 for i in b:
+    i = i[i.find(".") + 1:]
     c = i.split("-")
-    list_theme+=(c[0]+'|')*round(int(c[1])*(total_number / 100))
+    list_theme+=(c[0]+'|')*(int(c[1]))
 list_theme = list_theme.split("|")
 list_theme.remove("")
-random.shuffle(list_theme)
+# random.shuffle(list_theme)
 
 final_list = []
 for theme in list_theme:

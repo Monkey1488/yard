@@ -4,6 +4,7 @@ class Point(models.Model):
     title = models.CharField("Название", max_length=1000)
     comment = models.CharField("Описание", max_length=1000, blank=True)
     url = models.CharField("Ссылка", max_length=1000)
+    mode_keywords = models.BooleanField('Использовать ключевые слова по количеству ("Общее количество" не будет учитываться)', )
     keywords = models.TextField("Ключевые слова (1.слово-процент)", )
     total_number = models.IntegerField("Общее количество",)
     start_time = models.TimeField("Время начала", )

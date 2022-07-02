@@ -6,31 +6,45 @@ from webdriver_manager.chrome import ChromeDriverManager
 from time import sleep, perf_counter
 from seleniumwire import webdriver
 import random
+from math import ceil
+from selenium.webdriver.common.action_chains import ActionChains
 from pyvirtualdisplay import Display 
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 capa = DesiredCapabilities.CHROME
 capa["pageLoadStrategy"] = "none"
 
+
 @app.task
 def start():
-    a = 1
+    delay = 1
     for process in Point.objects.all():
         if process.activate:
-            start_bot.delay(a, process.url, process.keywords, process.title, process.start_time, process.end_time, process.total_number, process.pf1, process.pf2, process.pf3, process.pf4, process.pf5, process.pf6, process.pf7, process.pf8, process.pf9, process.pf10, process.pf11)
-            a+=60
+            start_bot.delay(delay, process.url, process.keywords, process.mode_keywords, process.title, process.start_time, process.end_time, process.total_number, process.pf1, process.pf2, process.pf3, process.pf4, process.pf5, process.pf6, process.pf7, process.pf8, process.pf9, process.pf10, process.pf11)
+            delay+=60
 
 @app.task
-def start_bot(delay, url, keyword, name, start, end, total_number, vpf1, vpf2, vpf3, vpf4, vpf5, vpf6, vpf7, vpf8, vpf9, vpf10,  vpf11):
-    sleep(delay)
-
-    b = keyword.split("\n")
-    list_theme = ''
-    for i in b:
-        c = i.split("-")
-        list_theme+=(c[0]+'|')*round(int(c[1])*(total_number / 100))
-    list_theme = list_theme.split("|")
-    list_theme.remove("")
-    random.shuffle(list_theme)
+def start_bot(delay, url, keyword, mode_keywords, name, start, end, total_number, vpf1, vpf2, vpf3, vpf4, vpf5, vpf6, vpf7, vpf8, vpf9, vpf10,  vpf11):
+    
+    if mode_keywords:
+        base = keyword.split("\n")
+        list_theme = ''
+        for i in base:
+            i = i[i.find(".") + 1:]
+            c = i.split("-")
+            list_theme+=(c[0]+'|')*(int(c[1]))
+        list_theme = list_theme.split("|")
+        list_theme.remove("")
+        random.shuffle(list_theme)
+    else:
+        base = keyword.split("\n")
+        list_theme = ''
+        for i in base:
+            i = i[i.find(".") + 1:]
+            c = i.split("-")
+            list_theme+=(c[0]+'|')*ceil(int(c[1])*(total_number / 100))
+        list_theme = list_theme.split("|")
+        list_theme.remove("")
+        random.shuffle(list_theme)
 
     final_list = []
     for theme in list_theme:
@@ -92,7 +106,8 @@ def start_bot(delay, url, keyword, name, start, end, total_number, vpf1, vpf2, v
 
     print(final_list)
 
-    # sleep(delay_to_start.seconds)
+    sleep(delay_to_start.seconds)
+    sleep(delay)
     for theme in final_list:
         try:
             display = Display(visible = 0, size=(1536, 1024)) 
@@ -104,41 +119,42 @@ def start_bot(delay, url, keyword, name, start, end, total_number, vpf1, vpf2, v
             # options.add_argument("--headless")
             options.add_argument("--disable-blink-features=AutomationControlled")
             proxy_list = ["https://4bgc8fuw:1yppm77g@marina.onlinesim.ru:14714", "https://iparchitect_12166_02_06_22:d5RafhEEhb28GeEk37@188.143.169.28:30147"]
-            proxy_options = {"proxy": {"https": random.choice(proxy_list) }}
+            proxy_options = {"proxy": {"https": "https://4bgc8fuw:1yppm77g@marina.onlinesim.ru:14714" }}
             
             starti = perf_counter()
 
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options, seleniumwire_options=proxy_options, desired_capabilities=capa)
             bot = BotMobile()
             print(theme)
-            bot.bot_start(driver, url, theme[0], name)
+            action =  ActionChains(driver)
+            bot.bot_start(action, driver, url, theme[0], name)
             if theme[1]:
-                bot.act_menu(driver)
-                bot.back_overview(driver)
+                bot.act_menu(action, driver)
+                bot.back_overview(action, driver)
             if theme[2]:
-                bot.act_goods_and_services(driver)
-                bot.back_overview(driver)
+                bot.act_goods_and_services(action, driver)
+                bot.back_overview(action, driver)
             if theme[3]:
-                bot.act_news(driver)
-                bot.back_overview(driver)
+                bot.act_news(action, driver)
+                bot.back_overview(action, driver)
             if theme[4]:
-                bot.act_photo(driver)
-                bot.back_overview(driver)
+                bot.act_photo(action, driver)
+                bot.back_overview(action, driver)
             if theme[5]:
-                bot.act_comment(driver)
-                bot.back_overview(driver)
+                bot.act_comment(action, driver)
+                bot.back_overview(action, driver)
             if theme[6]:
-                bot.act_watch_history(driver)
+                bot.act_watch_history(action, driver)
             if theme[7]:
-                bot.act_watch_schedule(driver)
+                bot.act_watch_schedule(action, driver)
             if theme[8]:
-                bot.act_going_to_website(driver)
+                bot.act_going_to_website(action, driver)
             if theme[9]:
-                bot.act_build_route(driver)
+                bot.act_build_route(action, driver)
             if theme[10]:
-                bot.act_phone(driver)
+                bot.act_phone(action, driver)
             if theme[11]:
-                bot.act_watch_input(driver)
+                bot.act_watch_input(action, driver)
                 
             try:
                 driver.quit()
