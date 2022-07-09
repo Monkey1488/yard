@@ -41,7 +41,7 @@ import random
 #             i.append(1)
 #             pf-=1
 
-keyword = "1.цветы-3\n2.розы-3\n3.магазин-4"
+keyword = "цветы-3\nрозы-3\n3.магазин-4"
 total_number = 100
 b = keyword.split("\n")
 list_theme = ''
@@ -104,7 +104,6 @@ print(final_list)
 # # random.shuffle(final_list)
 
 # print(final_list)
-
 
 
 

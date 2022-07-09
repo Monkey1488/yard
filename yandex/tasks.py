@@ -57,18 +57,18 @@ def start_bot(delay, url, keyword, mode_keywords, name, start, end, total_number
     delta = end - start
     interval = delta.seconds / len(list_theme)
     delay_to_start = start - datetime.datetime.now() 
-
-    pf1 = round(total_number/100*vpf1)
-    pf2 = round(total_number/100*vpf2)
-    pf3 = round(total_number/100*vpf3)
-    pf4 = round(total_number/100*vpf4)
-    pf5 = round(total_number/100*vpf5)
-    pf6 = round(total_number/100*vpf6)
-    pf7 = round(total_number/100*vpf7)
-    pf8 = vpf8
-    pf9 = vpf9
-    pf10 = vpf10
-    pf11 = vpf11
+    
+    pf1 = change_pf(vpf1, total_number)
+    pf2 = change_pf(vpf2, total_number)
+    pf3 = change_pf(vpf3, total_number)
+    pf4 = change_pf(vpf4, total_number)
+    pf5 = change_pf(vpf5, total_number)
+    pf6 = change_pf(vpf6, total_number)
+    pf7 = change_pf(vpf7, total_number)
+    pf8 = change_pf(vpf8, total_number)
+    pf9 = change_pf(vpf9, total_number)
+    pf10 = change_pf(vpf10, total_number)
+    pf11 = change_pf(vpf11, total_number)
 
     append_pf(pf1, final_list)
     append_pf(pf2, final_list)
@@ -104,9 +104,10 @@ def start_bot(delay, url, keyword, mode_keywords, name, start, end, total_number
             i.append(0)
     random.shuffle(final_list)
 
-    print(final_list)
+    print(final_list, len(final_list))
 
     sleep(delay_to_start.seconds)
+    print(f"START - {name}")
     sleep(delay)
     for theme in final_list:
         try:
@@ -175,6 +176,14 @@ def start_bot(delay, url, keyword, mode_keywords, name, start, end, total_number
     
 
 
+def change_pf(vpf, total_number):
+    if "%" in vpf:
+        vpf = int(vpf.replace("%", ""))
+        pf = round(total_number/100*vpf)
+        return pf
+    else:
+        pf = int(vpf)
+        return pf
 
 
 def append_pf(pf, list):
